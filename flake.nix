@@ -1,32 +1,31 @@
 {
- description = "My second flake!";
+ description = "A Nix flake based python development environment";
 
    inputs = {
-      nixpkgs.url = "github.nixos/nixpkgs/nixos-unstable";
+      nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     };
 
-    outputs = {self, nixpkgs, ...}: 
-    
-    let
+    outputs = {self, nixpkgs, ...}:
+      let
+        system = "x86_64-linux";
+      in {
+        devShells."${system}".default = 
+          let
+            pkgs = import nixpkgs {
+              inherit system;
+            };
+          in pkgs.mkShell {
+            packages = with pkgs; [
+            python313Full
+            python313Packages.tkinter
+            python313Packages.pandas
+            python313Packages.numpy
+            fish 
+          ];
 
-      pkgs = nixpkgs.legacyPackages."x86_64-linux";
-    
-      # if a python package is not packaged in nix use pip2nix
-      # $ nix run github:nix-community/pip2nix -- generate packagename_in_pip_format
-      # this generates python-packages.nix and use with this flake by uncommenting lines below
-      # packageOverrides = pkgs.callPackages. ./python-packages.nix {};
-      # python = pkgs.python3.override { inherit packageOverrides; };
-
-    in {
-      devShells.x86_64-linux.default = pkgs.mkShell {
-
-        packages = [
-          (pkgs.python313.withPackages(p: with p; [
-            tkinter
-            numpy
-          ]))
-        ];
-
+          shellHook = ''
+            exec fish
+          '';
+        };
       };
-    };
   }
