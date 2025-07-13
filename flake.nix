@@ -20,6 +20,8 @@
             python313Packages.tkinter
             python313Packages.pandas
             python313Packages.numpy
+            jupyter-all
+            nodejs_24
             fish 
           ];
 
